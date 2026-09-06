@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RetroVHS 概要</title>
+<link rel="stylesheet" href="../assets/style.css">
+<!-- ko/index.html（2026-09-06 確定）からの派生。セクション・id・図ファイルは韓国語版と 1:1。 -->
+</head>
+<body>
+<header><div class="wrap">
+  <h1>RetroVHS <small>VHS カムコーダー ポストプロセス · UE 5.3~5.8</small></h1>
+  <nav data-site-nav></nav>
+</div></header>
+
+<main><div class="wrap">
+
+<section id="intro">
+  <h2>概要</h2>
+  <p class="lead">VHS カムコーダーの画質劣化を再現するポストプロセスマテリアルパックです。レベルに <code>BP_RetroVHS_Rig</code> アクタを配置すると適用され、マテリアルインスタンスのパラメータとポストプロセスボリュームの設定で制御できます。プラグイン、C++、外部アセットは使用しません。</p>
+  <div class="figs one">
+    <figure><img src="../img/0_overview_B.png" alt="リグを適用したショーケースマップ" data-missing="図 0-B: リグ適用ビューポート"><figcaption><b>図 0-B.</b> ショーケースマップ、リグ適用状態（<code>BlendWeight</code> = 1）。</figcaption></figure>
+  </div>
+  <table>
+    <tr><th>構成エフェクト</th><th>内容</th></tr>
+    <tr><td>魚眼</td><td>等距離射影のレンズ歪み</td></tr>
+    <tr><td>バンドノイズ</td><td>水平バンド状のテープノイズ</td></tr>
+    <tr><td>クロマノイズ</td><td>ランダムな RGB ノイズ</td></tr>
+    <tr><td>色にじみ</td><td>水平方向に広がる色にじみ効果</td></tr>
+    <tr><td>アパーチャシャープニング</td><td>輝度成分へのアンシャープマスク</td></tr>
+    <tr><td>LUT</td><td>NTSC 系カラー LUT 4 種。既定値 Standard</td></tr>
+  </table>
+</section>
+
+<section id="install">
+  <h2>インストール</h2>
+  <ol class="steps">
+    <li>Fab の「プロジェクトに追加」を実行します。手動で導入する場合は <code>Content/RetroVHS</code> フォルダを対象プロジェクトの <code>Content</code> にコピーします。</li>
+    <li><code>BP_RetroVHS_Rig</code> をレベルに配置します。好みに応じてマテリアルインスタンスのパラメータや LUT などのポストプロセスボリューム設定を調整します。</li>
+  </ol>
+</section>
+
+<section id="config">
+  <h2>設定方法</h2>
+  <p>設定項目は担当アセットによって二つに分かれます。</p>
+  <table>
+    <tr><th>機能</th><th>担当アセット</th><th>場所 · 備考</th></tr>
+    <tr><td>エフェクトパラメータ（魚眼、バンドノイズ、クロマノイズ、色にじみ、シャープニング）</td><td><code>MI_RetroVHS</code></td><td><code>/Game/RetroVHS/Materials/MI_RetroVHS</code>。パラメータはチェックボックスを有効にすると適用されます。一覧は <a href="#params">パラメータ一覧</a></td></tr>
+    <tr><td>LUT · 露出 · ブルーム · レンズダート · ビネット · 色収差 · ブレンダブルスロット</td><td><code>BP_RetroVHS_Rig</code></td><td>レベル上のリグアクタ → 詳細 → PostProcess コンポーネント。チェックが有効な項目がリグの上書き値です</td></tr>
+    <tr><td>全体の強度 · 有効/無効</td><td><code>MI_RetroVHS.BlendWeight</code></td><td>1 = 最大、0 = 未適用。魚眼の強度にも乗算されます。ポストプロセスボリュームのブレンダブル Weight はパラメータをベースの既定値へ補間する値のため、強度調整には使用しません</td></tr>
+  </table>
+</section>
+
+<section id="contents">
+  <h2>パック構成</h2>
+  <p>全 22 アセットです。外部参照はエンジンコンテンツのみです：基本形状（BasicShapes）、マテリアルプレビューメッシュ、テキストレンダーの既定フォント・マテリアル、<code>T_ScreenDirt02_w</code>。</p>
+  <table>
+    <tr><th>アセット（<code>/Game/RetroVHS/</code>）</th><th>種類</th><th>役割</th></tr>
+    <tr><td><code>Blueprints/BP_RetroVHS_Rig</code></td><td>ブループリント</td><td>ルート = アンバウンドの PostProcessComponent。レベルに配置する唯一のアクタ</td></tr>
+    <tr><td><code>Materials/M_RetroVHS</code></td><td>マスターマテリアル（Post Process）</td><td>魚眼・バンドノイズ・クロマノイズ・色にじみ・シャープニングの統合グラフ。パラメータ既定値を保持</td></tr>
+    <tr><td><code>Materials/MI_RetroVHS</code></td><td>マテリアルインスタンス</td><td>リグに登録されるインスタンス。ユーザーが調整するパラメータ全て</td></tr>
+    <tr><td><code>Textures/T_RetroVHS_BandNoise_256</code></td><td>テクスチャ 256×256</td><td>ラテン方陣ノイズ。クロマノイズのソース</td></tr>
+    <tr><td><code>Textures/T_RetroVHS_LUT_{Neutral, Subtle, Standard, Worn}</code></td><td>LUT テクスチャ 256×16 × 4</td><td>NTSC 系カラー LUT。リグ既定値 Standard</td></tr>
+    <tr><td><code>Maps/L_RetroVHS_Overview</code></td><td>マップ</td><td>全アセット展示マップ。LUT 別のプレート 4 枚（各カラープローブ 3 + <code>M_Metal</code> プレビューメッシュ）、壁・天井・照明マテリアルのパネル 3 枚。リグはグローバル、プレートのボリュームは LUT のみ上書き</td></tr>
+    <tr><td><code>Maps/L_RetroVHS_Showcase</code></td><td>マップ</td><td>デモシーン。エンジン基本形状と <code>M_BackRoom</code> で構成した 24 × 24 m の室内。リグ 1 + Standard LUT。照明は天井パネルのエミッシブのみのため Lumen が必要</td></tr>
+    <tr><td><code>Demo/Materials/M_BackRoom</code>, <code>MI_BackRoom{Plane, Wall, Ceiling, Light}</code></td><td>マスター 1 + インスタンス 4</td><td>ワールド整列の三面投影マテリアル。メッシュ UV に依存せず cm 単位で繰り返し。床 · 壁 · 天井（グリッドマスク） · 蛍光灯パネル（エミッシブ）</td></tr>
+    <tr><td><code>Demo/Materials/M_Tint</code>, <code>M_Metal</code>, <code>MI_R</code>, <code>MI_G</code>, <code>MI_B</code></td><td>マスター 1 + インスタンス 4</td><td>プローブ用の単色マテリアル。<code>M_Metal</code> はクリアコートのインスタンス、R/G/B は色にじみ確認用の原色</td></tr>
+    <tr><td><code>Demo/Textures/T_BackRoomCeilingMask</code>, <code>T_BackRoom_ORM_Flat</code></td><td>テクスチャ 1024²、4×4</td><td>天井グリッドマスク · 平面 ORM 既定値</td></tr>
+  </table>
+</section>
+
+<section id="requirements">
+  <h2>動作要件</h2>
+  <table>
+    <tr><th>項目</th><th>内容</th></tr>
+    <tr><td>エンジン</td><td>Unreal Engine 5.3~5.8。5.3 で保存しているため上位バージョンで開けます</td></tr>
+    <tr><td>プラットフォーム</td><td>検証環境 Windows、DirectX 12。After Tonemapping 位置のポストプロセスマテリアルで、G バッファは使用しません</td></tr>
+    <tr><td>露出設定</td><td>リグの露出値は EV100 単位です。<code>r.DefaultFeature.AutoExposure.ExtendDefaultLuminanceRange</code> が False のプロジェクトではリグの Exposure Min / Max を再設定します</td></tr>
+    <tr><td>Lumen</td><td>ショーケースマップにのみ必要です。パック自体はレンダラーを制限しません</td></tr>
+  </table>
+</section>
+
+<section id="params">
+  <h2>パラメータ一覧</h2>
+  <p>既定値はマスター <code>M_RetroVHS</code> の値です。<code>MI_RetroVHS</code> は <code>BlendWeight</code> のみをオーバーライドした状態で提供されます。</p>
+  <table class="params">
+    <tr><th>パラメータ</th><th>既定値</th><th>内容</th></tr>
+    <tr><td><code>BlendWeight</code></td><td>1.0</td><td>マスターゲート。0 = 未適用</td></tr>
+    <tr><td><code>LensStrength</code></td><td>45</td><td>魚眼の半画角（度）</td></tr>
+    <tr><td><code>LensZoom</code></td><td>1.0</td><td>魚眼の拡大倍率</td></tr>
+    <tr><td><code>FrameRate</code></td><td>29.98</td><td>ノイズ更新周期（fps）</td></tr>
+    <tr><td><code>BandCount</code></td><td>100</td><td>水平バンド数</td></tr>
+    <tr><td><code>BandPower</code></td><td>0.5</td><td>バンド強度分布の指数</td></tr>
+    <tr><td><code>NoisePower</code></td><td>0.2</td><td>クロマノイズの強度</td></tr>
+    <tr><td><code>NoiseSize</code></td><td>1.0</td><td>クロマノイズの粒サイズ</td></tr>
+    <tr><td><code>FilterSize</code></td><td>1.0</td><td>色にじみのタップ間隔（ピクセル）</td></tr>
+    <tr><td><code>BleedPower</code></td><td>1.25</td><td>色にじみの強度</td></tr>
+    <tr><td><code>SharpenPower</code></td><td>5.0</td><td>アパーチャシャープニングの強度</td></tr>
+  </table>
+</section>
+
+<footer>RetroVHS · UE 5.3~5.8 · 既定値は <code>M_RetroVHS</code> のパラメータ既定値と <code>BP_RetroVHS_Rig</code> の設定値です。</footer>
+
+</div></main>
+<script src="../assets/nav.js"></script>
+</body>
+</html>

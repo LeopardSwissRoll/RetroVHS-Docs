@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RetroVHS 개론</title>
+<link rel="stylesheet" href="../assets/style.css">
+<!--
+  한국어판 = 검수용 원본 (2026-09-06). 확정되면 다른 언어를 이 본문에서 파생한다. 페이지·id·그림 파일명은 언어 간 1:1.
+  페이지 3장: index(개론) · parameters(MI 파라미터) · rig(그 외 PPV 설정). CSS/JS 는 ../assets/, 그림은 ../img/ 공유.
+  어투: 「~니다」 체 (사용자 지시 09-06). 문장은 ~입니다/~합니다, 표의 짧은 항목은 명사형. 비유·구어 없음.
+-->
+</head>
+<body>
+<header><div class="wrap">
+  <h1>RetroVHS <small>VHS 캠코더 포스트프로세스 · UE 5.3~5.8</small></h1>
+  <nav data-site-nav></nav>
+</div></header>
+
+<main><div class="wrap">
+
+<section id="intro">
+  <h2>개요</h2>
+  <p class="lead">VHS 캠코더 화질 열화를 재현하는 포스트프로세스 머티리얼 팩입니다. 레벨에 <code>BP_RetroVHS_Rig</code> 액터를 배치하면 적용되며, 머티리얼 인스턴스 및 포스트프로세스 볼륨 파라미터로 제어 가능합니다. 플러그인, C++, 외부 에셋은 사용하지 않습니다.</p>
+  <div class="figs one">
+    <figure><img src="../img/0_overview_B.png" alt="리그를 적용한 쇼케이스 맵" data-missing="그림 0-B: 리그 적용 뷰포트"><figcaption><b>그림 0-B.</b> 쇼케이스 맵, 리그 적용 상태 (<code>BlendWeight</code> = 1).</figcaption></figure>
+  </div>
+  <table>
+    <tr><th>구성 효과</th><th>내용</th></tr>
+    <tr><td>어안</td><td>등거리 투영 렌즈 왜곡</td></tr>
+    <tr><td>밴드 노이즈</td><td>수평 밴드 형태의 테이프 노이즈</td></tr>
+    <tr><td>크로마 노이즈</td><td>무작위 RGB 노이즈</td></tr>
+    <tr><td>색 번짐</td><td>수평 방향으로 번지는 색 번짐 효과</td></tr>
+    <tr><td>어퍼처 샤프닝</td><td>휘도 성분 언샤프 마스크</td></tr>
+    <tr><td>LUT</td><td>NTSC 계열 컬러 LUT 4종. 기본값 Standard</td></tr>
+  </table>
+</section>
+
+<section id="install">
+  <h2>설치</h2>
+  <ol class="steps">
+    <li>Fab 의 「프로젝트에 추가」를 실행합니다. 수동으로 설치할 경우 <code>Content/RetroVHS</code> 폴더를 대상 프로젝트의 <code>Content</code> 에 복사합니다.</li>
+    <li><code>BP_RetroVHS_Rig</code> 를 레벨에 배치합니다. 기호에 맞게 머티리얼 인스턴스 파라미터나 LUT 효과 등의 포스트프로세스 볼륨 설정을 제어합니다.</li>
+  </ol>
+</section>
+
+<section id="config">
+  <h2>세부 설정법</h2>
+  <p>설정 항목은 담당 에셋에 따라 두 곳으로 나뉩니다.</p>
+  <table>
+    <tr><th>기능</th><th>담당 에셋</th><th>위치 · 참조</th></tr>
+    <tr><td>효과 파라미터(어안, 밴드 노이즈, 크로마 노이즈, 색 번짐, 샤프닝)</td><td><code>MI_RetroVHS</code></td><td><code>/Game/RetroVHS/Materials/MI_RetroVHS</code>. 파라미터의 체크박스를 활성화해야 값이 적용됩니다. 목록은 <a href="#params">파라미터 목록</a></td></tr>
+    <tr><td>LUT · 노출 · 블룸 · 렌즈 더트 · 비네트 · 색수차 · 블렌더블 슬롯</td><td><code>BP_RetroVHS_Rig</code></td><td>레벨의 리그 액터 → 디테일 → PostProcess 컴포넌트. 체크박스가 활성화된 항목이 리그가 덮어쓰는 값입니다</td></tr>
+    <tr><td>효과 전체 강도 · 활성/비활성</td><td><code>MI_RetroVHS.BlendWeight</code></td><td>1 = 최대, 0 = 미적용. 어안 강도에도 곱해집니다. 포스트프로세스 볼륨의 블렌더블 Weight 는 파라미터를 베이스 기본값으로 보간하는 값이므로 세기 조절에 사용하지 않습니다</td></tr>
+  </table>
+</section>
+
+<section id="contents">
+  <h2>팩 구성</h2>
+  <p>총 22 에셋입니다. 외부 참조는 엔진 콘텐츠뿐입니다: 기본 도형(BasicShapes), 머티리얼 프리뷰 메시, 텍스트 렌더 기본 폰트·머티리얼, <code>T_ScreenDirt02_w</code>.</p>
+  <table>
+    <tr><th>에셋 (<code>/Game/RetroVHS/</code>)</th><th>종류</th><th>역할</th></tr>
+    <tr><td><code>Blueprints/BP_RetroVHS_Rig</code></td><td>블루프린트</td><td>루트 = 언바운드 PostProcessComponent. 레벨에 배치하는 유일한 액터</td></tr>
+    <tr><td><code>Materials/M_RetroVHS</code></td><td>마스터 머티리얼 (Post Process)</td><td>어안·밴드 노이즈·크로마 노이즈·색 번짐·샤프닝 통합 그래프. 파라미터 기본값 보유</td></tr>
+    <tr><td><code>Materials/MI_RetroVHS</code></td><td>머티리얼 인스턴스</td><td>리그에 등록되는 인스턴스. 사용자 조절 파라미터 전부</td></tr>
+    <tr><td><code>Textures/T_RetroVHS_BandNoise_256</code></td><td>텍스처 256×256</td><td>라틴 방진 노이즈. 크로마 노이즈 소스</td></tr>
+    <tr><td><code>Textures/T_RetroVHS_LUT_{Neutral, Subtle, Standard, Worn}</code></td><td>LUT 텍스처 256×16 × 4</td><td>NTSC 계열 컬러 LUT. 리그 기본값 Standard</td></tr>
+    <tr><td><code>Maps/L_RetroVHS_Overview</code></td><td>맵</td><td>전 에셋 진열 맵. LUT 별 판 4개(각각 색 프로브 3 + <code>M_Metal</code> 프리뷰 메시), 벽·천장·조명 머티리얼 패널 3. 리그는 전역, 판의 볼륨은 LUT 만 덮어씁니다</td></tr>
+    <tr><td><code>Maps/L_RetroVHS_Showcase</code></td><td>맵</td><td>데모 씬. 엔진 기본 도형과 <code>M_BackRoom</code> 으로 구성한 24 × 24 m 실내. 리그 1 + Standard LUT. 조명은 천장 패널의 이미시브만 사용하므로 Lumen 이 필요합니다</td></tr>
+    <tr><td><code>Demo/Materials/M_BackRoom</code>, <code>MI_BackRoom{Plane, Wall, Ceiling, Light}</code></td><td>마스터 1 + 인스턴스 4</td><td>월드 정렬 삼면 투영 머티리얼. 메시 UV 와 무관하게 cm 단위로 반복. 바닥 · 벽 · 천장(격자 마스크) · 형광 패널(이미시브)</td></tr>
+    <tr><td><code>Demo/Materials/M_Tint</code>, <code>M_Metal</code>, <code>MI_R</code>, <code>MI_G</code>, <code>MI_B</code></td><td>마스터 1 + 인스턴스 4</td><td>프로브용 단색 머티리얼. <code>M_Metal</code> 은 클리어코트 인스턴스, R/G/B 는 색 번짐 확인용 원색</td></tr>
+    <tr><td><code>Demo/Textures/T_BackRoomCeilingMask</code>, <code>T_BackRoom_ORM_Flat</code></td><td>텍스처 1024², 4×4</td><td>천장 격자 마스크 · 평면 ORM 기본값</td></tr>
+  </table>
+</section>
+
+<section id="requirements">
+  <h2>요구 사항</h2>
+  <table>
+    <tr><th>항목</th><th>내용</th></tr>
+    <tr><td>엔진</td><td>Unreal Engine 5.3~5.8. 5.3 저장본이므로 상위 버전에서 열립니다</td></tr>
+    <tr><td>플랫폼</td><td>검증 환경 Windows, DirectX 12. After Tonemapping 위치의 포스트프로세스 머티리얼이며 G-버퍼를 사용하지 않습니다</td></tr>
+    <tr><td>노출 설정</td><td>리그의 노출 값은 EV100 단위입니다. <code>r.DefaultFeature.AutoExposure.ExtendDefaultLuminanceRange</code> 가 False 인 프로젝트에서는 리그의 Exposure Min / Max 를 재설정합니다</td></tr>
+    <tr><td>Lumen</td><td>쇼케이스 맵에만 필요합니다. 팩 자체는 렌더러를 제한하지 않습니다</td></tr>
+  </table>
+</section>
+
+<section id="params">
+  <h2>파라미터 목록</h2>
+  <p>기본값은 마스터 <code>M_RetroVHS</code> 의 값입니다. <code>MI_RetroVHS</code> 는 <code>BlendWeight</code> 만 오버라이드한 상태로 제공됩니다.</p>
+  <table class="params">
+    <tr><th>파라미터</th><th>기본값</th><th>내용</th></tr>
+    <tr><td><code>BlendWeight</code></td><td>1.0</td><td>마스터 게이트. 0 = 미적용</td></tr>
+    <tr><td><code>LensStrength</code></td><td>45</td><td>어안 반화각(도)</td></tr>
+    <tr><td><code>LensZoom</code></td><td>1.0</td><td>어안 확대 배율</td></tr>
+    <tr><td><code>FrameRate</code></td><td>29.98</td><td>노이즈 갱신 주기(fps)</td></tr>
+    <tr><td><code>BandCount</code></td><td>100</td><td>수평 밴드 수</td></tr>
+    <tr><td><code>BandPower</code></td><td>0.5</td><td>밴드 세기 분포 지수</td></tr>
+    <tr><td><code>NoisePower</code></td><td>0.2</td><td>크로마 노이즈 세기</td></tr>
+    <tr><td><code>NoiseSize</code></td><td>1.0</td><td>크로마 노이즈 알갱이 크기</td></tr>
+    <tr><td><code>FilterSize</code></td><td>1.0</td><td>색 번짐 탭 간격(픽셀)</td></tr>
+    <tr><td><code>BleedPower</code></td><td>1.25</td><td>색 번짐 세기</td></tr>
+    <tr><td><code>SharpenPower</code></td><td>5.0</td><td>어퍼처 샤프닝 세기</td></tr>
+  </table>
+</section>
+
+<footer>RetroVHS · UE 5.3~5.8 · 기본값은 <code>M_RetroVHS</code> 의 파라미터 기본값과 <code>BP_RetroVHS_Rig</code> 의 설정값입니다.</footer>
+
+</div></main>
+<script src="../assets/nav.js"></script>
+</body>
+</html>

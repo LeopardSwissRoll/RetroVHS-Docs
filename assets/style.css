@@ -1,0 +1,50 @@
+/* RetroVHS 문서 공용 스타일 — 모든 언어·모든 페이지가 이 파일 하나를 쓴다. 페이지 안에 <style> 을 두지 말 것. */
+:root { --ink:#1b1b1f; --mute:#5c5f66; --line:#dcdde2; --bg:#fbfbfc; --card:#ffffff; --accent:#7a2e8e; --code:#f1f1f5; }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--ink);
+       font:16px/1.65 system-ui,-apple-system,"Segoe UI","Malgun Gothic","Apple SD Gothic Neo","Hiragino Sans","Noto Sans CJK","PingFang SC",Roboto,sans-serif;
+       word-break:keep-all; }
+header { border-bottom:1px solid var(--line); background:var(--card); }
+.wrap { max-width: 980px; margin:0 auto; padding: 0 20px; }
+header .wrap { padding:22px 20px 0; }
+h1 { margin:0 0 4px; font-size:28px; letter-spacing:.2px; }
+h1 small { font-weight:400; color:var(--mute); font-size:16px; margin-left:8px; }
+
+/* nav.js 가 채운다: 페이지 탭 줄 + 언어 전환, 그 아래 현재 페이지의 절 링크 */
+nav[data-site-nav] { margin-top:12px; font-size:14px; }
+nav .tabs { display:flex; flex-wrap:wrap; gap:0 4px; align-items:flex-end; border-bottom:1px solid var(--line); }
+nav .tabs a { display:inline-block; padding:8px 12px; color:var(--mute); text-decoration:none; border-bottom:2px solid transparent; margin-bottom:-1px; }
+nav .tabs a:hover { color:var(--accent); }
+nav .tabs a.cur { color:var(--ink); font-weight:600; border-bottom-color:var(--accent); }
+nav .lang { margin-left:auto; padding:8px 0; color:var(--mute); }
+nav .lang a { color:var(--accent); text-decoration:none; }
+nav .lang a:hover { text-decoration:underline; }
+nav .secs { display:flex; flex-wrap:wrap; gap:4px 14px; padding:8px 0; }
+nav .secs a { color:var(--accent); text-decoration:none; }
+nav .secs a:hover { text-decoration:underline; }
+
+main .wrap { padding: 8px 20px 60px; }
+section { padding: 26px 0 6px; border-bottom:1px solid var(--line); }
+h2 { font-size:22px; margin:0 0 6px; }
+h2 .num { display:inline-block; min-width:30px; color:var(--accent); font-variant-numeric: tabular-nums; }
+h3 { font-size:17px; margin:18px 0 6px; }
+p { margin: 8px 0; }
+.lead { color:var(--mute); margin-top:0; }
+code, kbd { font: 14px/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; background:var(--code); padding:1px 5px; border-radius:4px; }
+pre { background:var(--code); padding:12px 14px; border-radius:6px; overflow:auto; font-size:14px; }
+table { border-collapse:collapse; width:100%; margin:10px 0 14px; font-size:15px; }
+th, td { text-align:left; padding:7px 9px; border-bottom:1px solid var(--line); vertical-align:top; }
+th { color:var(--mute); font-weight:600; font-size:13px; letter-spacing:.4px; }
+table.params td:nth-child(2) { white-space:nowrap; font-variant-numeric: tabular-nums; }
+.figs { display:grid; grid-template-columns: 1fr 1fr; gap:14px; margin:14px 0 6px; }
+.figs.one { grid-template-columns: 1fr; }
+@media (max-width: 720px) { .figs { grid-template-columns: 1fr; } }
+figure { margin:0; background:var(--card); border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+figure img { display:block; width:100%; aspect-ratio:16/9; object-fit:cover; background:#e9e9ee; }
+figure img.missing { object-fit:contain; padding:26% 0; font-size:13px; color:var(--mute); text-align:center; }
+figcaption { padding:8px 11px; font-size:13.5px; color:var(--mute); }
+figcaption b { color:var(--ink); }
+.note { border-left:4px solid var(--accent); background:var(--card); padding:10px 14px; border-radius:0 6px 6px 0; margin:12px 0; }
+.warn { border-left-color:#c0392b; }
+ol.steps li { margin:6px 0; }
+footer { color:var(--mute); font-size:13px; padding:20px 0; }

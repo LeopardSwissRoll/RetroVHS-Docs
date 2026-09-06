@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RetroVHS Overview</title>
+<link rel="stylesheet" href="../assets/style.css">
+<!-- Derived from ko/index.html (confirmed 2026-09-06). Sections, ids and figure files are 1:1 with the Korean master. Fab's Documentation Link points to the site root, which redirects here. -->
+</head>
+<body>
+<header><div class="wrap">
+  <h1>RetroVHS <small>VHS camcorder post process · UE 5.3~5.8</small></h1>
+  <nav data-site-nav></nav>
+</div></header>
+
+<main><div class="wrap">
+
+<section id="intro">
+  <h2>Overview</h2>
+  <p class="lead">A post-process material pack that reproduces VHS camcorder picture degradation. Place the <code>BP_RetroVHS_Rig</code> actor in a level to apply it; it is controlled through material instance parameters and post-process volume settings. No plugins, C++ or third-party assets are used.</p>
+  <div class="figs one">
+    <figure><img src="../img/0_overview_B.png" alt="Showcase map with the rig applied" data-missing="Figure 0-B: viewport with the rig applied"><figcaption><b>Figure 0-B.</b> Showcase map with the rig applied (<code>BlendWeight</code> = 1).</figcaption></figure>
+  </div>
+  <table>
+    <tr><th>Effect</th><th>Description</th></tr>
+    <tr><td>Fisheye</td><td>Equidistant-projection lens distortion</td></tr>
+    <tr><td>Band noise</td><td>Tape noise in horizontal bands</td></tr>
+    <tr><td>Chroma noise</td><td>Random RGB noise</td></tr>
+    <tr><td>Color bleed</td><td>Horizontal colour bleeding</td></tr>
+    <tr><td>Aperture sharpening</td><td>Unsharp mask on the luminance component</td></tr>
+    <tr><td>LUT</td><td>Four NTSC-style colour LUTs. Default: Standard</td></tr>
+  </table>
+</section>
+
+<section id="install">
+  <h2>Installation</h2>
+  <ol class="steps">
+    <li>Use “Add to project” on Fab. For a manual install, copy the <code>Content/RetroVHS</code> folder into the target project's <code>Content</code> folder.</li>
+    <li>Place <code>BP_RetroVHS_Rig</code> in the level. Adjust the material instance parameters and the post-process volume settings such as the LUT to taste.</li>
+  </ol>
+</section>
+
+<section id="config">
+  <h2>Configuration</h2>
+  <p>Settings are split between two assets.</p>
+  <table>
+    <tr><th>Function</th><th>Asset</th><th>Location · Notes</th></tr>
+    <tr><td>Effect parameters (fisheye, band noise, chroma noise, color bleed, sharpening)</td><td><code>MI_RetroVHS</code></td><td><code>/Game/RetroVHS/Materials/MI_RetroVHS</code>. A parameter takes effect only when its checkbox is enabled. See <a href="#params">Parameter list</a></td></tr>
+    <tr><td>LUT · exposure · bloom · lens dirt · vignette · chromatic aberration · blendable slot</td><td><code>BP_RetroVHS_Rig</code></td><td>Rig actor in the level → Details → PostProcess component. The checked entries are the values the rig overrides</td></tr>
+    <tr><td>Overall strength · on/off</td><td><code>MI_RetroVHS.BlendWeight</code></td><td>1 = full, 0 = off. Also multiplies the fisheye strength. Do not use the post-process volume's blendable Weight for strength: it interpolates the parameters toward the base material defaults</td></tr>
+  </table>
+</section>
+
+<section id="contents">
+  <h2>Pack contents</h2>
+  <p>22 assets in total. The only external references are engine content: basic shapes (BasicShapes), the material preview mesh, the default text-render font and material, and <code>T_ScreenDirt02_w</code>.</p>
+  <table>
+    <tr><th>Asset (<code>/Game/RetroVHS/</code>)</th><th>Type</th><th>Role</th></tr>
+    <tr><td><code>Blueprints/BP_RetroVHS_Rig</code></td><td>Blueprint</td><td>Root = unbound PostProcessComponent. The only actor placed in the level</td></tr>
+    <tr><td><code>Materials/M_RetroVHS</code></td><td>Master material (Post Process)</td><td>Combined graph for fisheye, band noise, chroma noise, color bleed and sharpening. Holds the parameter defaults</td></tr>
+    <tr><td><code>Materials/MI_RetroVHS</code></td><td>Material instance</td><td>The instance registered on the rig. All user-facing parameters</td></tr>
+    <tr><td><code>Textures/T_RetroVHS_BandNoise_256</code></td><td>Texture 256×256</td><td>Latin-square noise. Source for the chroma noise</td></tr>
+    <tr><td><code>Textures/T_RetroVHS_LUT_{Neutral, Subtle, Standard, Worn}</code></td><td>LUT textures 256×16 × 4</td><td>NTSC-style colour LUTs. Rig default: Standard</td></tr>
+    <tr><td><code>Maps/L_RetroVHS_Overview</code></td><td>Map</td><td>Overview map with every asset laid out. Four plates, one per LUT (each with 3 colour probes and the <code>M_Metal</code> preview mesh), plus 3 panels for the wall, ceiling and light materials. The rig is global; each plate's volume overrides only the LUT</td></tr>
+    <tr><td><code>Maps/L_RetroVHS_Showcase</code></td><td>Map</td><td>Demo scene. A 24 × 24 m interior built from engine basic shapes and <code>M_BackRoom</code>. One rig with the Standard LUT. Lit only by the emissive ceiling panels, so Lumen is required</td></tr>
+    <tr><td><code>Demo/Materials/M_BackRoom</code>, <code>MI_BackRoom{Plane, Wall, Ceiling, Light}</code></td><td>1 master + 4 instances</td><td>World-aligned tri-planar material. Tiles in centimetres regardless of mesh UVs. Floor · wall · ceiling (grid mask) · fluorescent panel (emissive)</td></tr>
+    <tr><td><code>Demo/Materials/M_Tint</code>, <code>M_Metal</code>, <code>MI_R</code>, <code>MI_G</code>, <code>MI_B</code></td><td>1 master + 4 instances</td><td>Flat-colour probe materials. <code>M_Metal</code> is a clear-coat instance; R/G/B are primary colours for checking color bleed</td></tr>
+    <tr><td><code>Demo/Textures/T_BackRoomCeilingMask</code>, <code>T_BackRoom_ORM_Flat</code></td><td>Textures 1024², 4×4</td><td>Ceiling grid mask · flat ORM default</td></tr>
+  </table>
+</section>
+
+<section id="requirements">
+  <h2>Requirements</h2>
+  <table>
+    <tr><th>Item</th><th>Details</th></tr>
+    <tr><td>Engine</td><td>Unreal Engine 5.3~5.8. Saved with 5.3, so it opens in later versions</td></tr>
+    <tr><td>Platform</td><td>Verified on Windows, DirectX 12. A post-process material at After Tonemapping; the G-buffer is not used</td></tr>
+    <tr><td>Exposure setting</td><td>The rig's exposure values are in EV100. In projects where <code>r.DefaultFeature.AutoExposure.ExtendDefaultLuminanceRange</code> is False, re-set the rig's Exposure Min / Max</td></tr>
+    <tr><td>Lumen</td><td>Required only for the showcase map. The pack itself does not restrict the renderer</td></tr>
+  </table>
+</section>
+
+<section id="params">
+  <h2>Parameter list</h2>
+  <p>Defaults are the values of the master material <code>M_RetroVHS</code>. <code>MI_RetroVHS</code> ships with only <code>BlendWeight</code> overridden.</p>
+  <table class="params">
+    <tr><th>Parameter</th><th>Default</th><th>Description</th></tr>
+    <tr><td><code>BlendWeight</code></td><td>1.0</td><td>Master gate. 0 = off</td></tr>
+    <tr><td><code>LensStrength</code></td><td>45</td><td>Fisheye half field of view (degrees)</td></tr>
+    <tr><td><code>LensZoom</code></td><td>1.0</td><td>Fisheye magnification</td></tr>
+    <tr><td><code>FrameRate</code></td><td>29.98</td><td>Noise update rate (fps)</td></tr>
+    <tr><td><code>BandCount</code></td><td>100</td><td>Number of horizontal bands</td></tr>
+    <tr><td><code>BandPower</code></td><td>0.5</td><td>Band intensity distribution exponent</td></tr>
+    <tr><td><code>NoisePower</code></td><td>0.2</td><td>Chroma noise strength</td></tr>
+    <tr><td><code>NoiseSize</code></td><td>1.0</td><td>Chroma noise grain size</td></tr>
+    <tr><td><code>FilterSize</code></td><td>1.0</td><td>Color bleed tap spacing (pixels)</td></tr>
+    <tr><td><code>BleedPower</code></td><td>1.25</td><td>Color bleed strength</td></tr>
+    <tr><td><code>SharpenPower</code></td><td>5.0</td><td>Aperture sharpening strength</td></tr>
+  </table>
+</section>
+
+<footer>RetroVHS · UE 5.3~5.8 · Defaults are the parameter defaults of <code>M_RetroVHS</code> and the settings of <code>BP_RetroVHS_Rig</code>.</footer>
+
+</div></main>
+<script src="../assets/nav.js"></script>
+</body>
+</html>

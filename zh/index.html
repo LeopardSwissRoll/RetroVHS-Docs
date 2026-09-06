@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RetroVHS 概述</title>
+<link rel="stylesheet" href="../assets/style.css">
+<!-- 由 ko/index.html（2026-09-06 定稿）派生。章节、id 与图片文件与韩文版一一对应。 -->
+</head>
+<body>
+<header><div class="wrap">
+  <h1>RetroVHS <small>VHS 摄像机后期处理 · UE 5.3~5.8</small></h1>
+  <nav data-site-nav></nav>
+</div></header>
+
+<main><div class="wrap">
+
+<section id="intro">
+  <h2>概述</h2>
+  <p class="lead">这是一个重现 VHS 摄像机画质劣化的后期处理材质包。在关卡中放置 <code>BP_RetroVHS_Rig</code> Actor 即可生效，并可通过材质实例参数和后期处理体积设置进行控制。不使用插件、C++ 或第三方资源。</p>
+  <div class="figs one">
+    <figure><img src="../img/0_overview_B.png" alt="应用了 Rig 的展示地图" data-missing="图 0-B：应用 Rig 的视口"><figcaption><b>图 0-B.</b> 展示地图，已应用 Rig（<code>BlendWeight</code> = 1）。</figcaption></figure>
+  </div>
+  <table>
+    <tr><th>效果</th><th>说明</th></tr>
+    <tr><td>鱼眼</td><td>等距投影的镜头畸变</td></tr>
+    <tr><td>条带噪点</td><td>水平条带状的磁带噪点</td></tr>
+    <tr><td>色度噪点</td><td>随机 RGB 噪点</td></tr>
+    <tr><td>色彩溢出</td><td>沿水平方向扩散的色彩溢出效果</td></tr>
+    <tr><td>孔径锐化</td><td>作用于亮度分量的反锐化掩模</td></tr>
+    <tr><td>LUT</td><td>4 种 NTSC 风格颜色 LUT。默认 Standard</td></tr>
+  </table>
+</section>
+
+<section id="install">
+  <h2>安装</h2>
+  <ol class="steps">
+    <li>在 Fab 中执行“添加到项目”。若手动安装，将 <code>Content/RetroVHS</code> 文件夹复制到目标项目的 <code>Content</code> 目录。</li>
+    <li>将 <code>BP_RetroVHS_Rig</code> 放入关卡。按需调整材质实例参数以及 LUT 等后期处理体积设置。</li>
+  </ol>
+</section>
+
+<section id="config">
+  <h2>设置方法</h2>
+  <p>设置项按所属资源分为两处。</p>
+  <table>
+    <tr><th>功能</th><th>所属资源</th><th>位置 · 备注</th></tr>
+    <tr><td>效果参数（鱼眼、条带噪点、色度噪点、色彩溢出、锐化）</td><td><code>MI_RetroVHS</code></td><td><code>/Game/RetroVHS/Materials/MI_RetroVHS</code>。参数需勾选复选框后才生效。列表见 <a href="#params">参数列表</a></td></tr>
+    <tr><td>LUT · 曝光 · 泛光 · 镜头污渍 · 暗角 · 色差 · 可混合项插槽</td><td><code>BP_RetroVHS_Rig</code></td><td>关卡中的 Rig Actor → 细节 → PostProcess 组件。已勾选的项即为 Rig 覆盖的值</td></tr>
+    <tr><td>整体强度 · 启用/禁用</td><td><code>MI_RetroVHS.BlendWeight</code></td><td>1 = 最大，0 = 不生效。同时乘入鱼眼强度。后期处理体积的可混合项 Weight 会把参数向基础材质默认值插值，因此不用于调节强度</td></tr>
+  </table>
+</section>
+
+<section id="contents">
+  <h2>包内容</h2>
+  <p>共 22 个资源。外部引用仅限引擎内容：基本形状（BasicShapes）、材质预览网格体、文本渲染默认字体与材质、<code>T_ScreenDirt02_w</code>。</p>
+  <table>
+    <tr><th>资源（<code>/Game/RetroVHS/</code>）</th><th>类型</th><th>作用</th></tr>
+    <tr><td><code>Blueprints/BP_RetroVHS_Rig</code></td><td>蓝图</td><td>根组件 = 无界 PostProcessComponent。关卡中唯一需要放置的 Actor</td></tr>
+    <tr><td><code>Materials/M_RetroVHS</code></td><td>主材质（Post Process）</td><td>鱼眼、条带噪点、色度噪点、色彩溢出、锐化的合并图表。保存参数默认值</td></tr>
+    <tr><td><code>Materials/MI_RetroVHS</code></td><td>材质实例</td><td>注册到 Rig 的实例。包含全部用户可调参数</td></tr>
+    <tr><td><code>Textures/T_RetroVHS_BandNoise_256</code></td><td>贴图 256×256</td><td>拉丁方噪点。色度噪点的来源</td></tr>
+    <tr><td><code>Textures/T_RetroVHS_LUT_{Neutral, Subtle, Standard, Worn}</code></td><td>LUT 贴图 256×16 × 4</td><td>NTSC 风格颜色 LUT。Rig 默认 Standard</td></tr>
+    <tr><td><code>Maps/L_RetroVHS_Overview</code></td><td>地图</td><td>陈列全部资源的总览地图。按 LUT 分为 4 块平台（每块含 3 个颜色探针和 <code>M_Metal</code> 预览网格体），另有墙面、天花板、灯光材质面板 3 块。Rig 为全局，平台的体积仅覆盖 LUT</td></tr>
+    <tr><td><code>Maps/L_RetroVHS_Showcase</code></td><td>地图</td><td>演示场景。由引擎基本形状和 <code>M_BackRoom</code> 构成的 24 × 24 m 室内。1 个 Rig + Standard LUT。照明仅来自天花板面板的自发光，因此需要 Lumen</td></tr>
+    <tr><td><code>Demo/Materials/M_BackRoom</code>, <code>MI_BackRoom{Plane, Wall, Ceiling, Light}</code></td><td>主材质 1 + 实例 4</td><td>世界对齐的三平面投影材质。与网格体 UV 无关，按厘米单位平铺。地面 · 墙面 · 天花板（网格遮罩） · 荧光灯面板（自发光）</td></tr>
+    <tr><td><code>Demo/Materials/M_Tint</code>, <code>M_Metal</code>, <code>MI_R</code>, <code>MI_G</code>, <code>MI_B</code></td><td>主材质 1 + 实例 4</td><td>探针用纯色材质。<code>M_Metal</code> 为清漆实例，R/G/B 为检查色彩溢出的三原色</td></tr>
+    <tr><td><code>Demo/Textures/T_BackRoomCeilingMask</code>, <code>T_BackRoom_ORM_Flat</code></td><td>贴图 1024²、4×4</td><td>天花板网格遮罩 · 平面 ORM 默认值</td></tr>
+  </table>
+</section>
+
+<section id="requirements">
+  <h2>运行要求</h2>
+  <table>
+    <tr><th>项目</th><th>说明</th></tr>
+    <tr><td>引擎</td><td>Unreal Engine 5.3~5.8。以 5.3 保存，可在更高版本中打开</td></tr>
+    <tr><td>平台</td><td>验证环境为 Windows、DirectX 12。位于 After Tonemapping 的后期处理材质，不使用 G 缓冲区</td></tr>
+    <tr><td>曝光设置</td><td>Rig 的曝光值以 EV100 为单位。在 <code>r.DefaultFeature.AutoExposure.ExtendDefaultLuminanceRange</code> 为 False 的项目中，需重新设置 Rig 的 Exposure Min / Max</td></tr>
+    <tr><td>Lumen</td><td>仅展示地图需要。包本身不限制渲染器</td></tr>
+  </table>
+</section>
+
+<section id="params">
+  <h2>参数列表</h2>
+  <p>默认值为主材质 <code>M_RetroVHS</code> 的值。<code>MI_RetroVHS</code> 交付时仅覆盖 <code>BlendWeight</code>。</p>
+  <table class="params">
+    <tr><th>参数</th><th>默认值</th><th>说明</th></tr>
+    <tr><td><code>BlendWeight</code></td><td>1.0</td><td>总开关。0 = 不生效</td></tr>
+    <tr><td><code>LensStrength</code></td><td>45</td><td>鱼眼半视场角（度）</td></tr>
+    <tr><td><code>LensZoom</code></td><td>1.0</td><td>鱼眼放大倍率</td></tr>
+    <tr><td><code>FrameRate</code></td><td>29.98</td><td>噪点更新频率（fps）</td></tr>
+    <tr><td><code>BandCount</code></td><td>100</td><td>水平条带数</td></tr>
+    <tr><td><code>BandPower</code></td><td>0.5</td><td>条带强度分布指数</td></tr>
+    <tr><td><code>NoisePower</code></td><td>0.2</td><td>色度噪点强度</td></tr>
+    <tr><td><code>NoiseSize</code></td><td>1.0</td><td>色度噪点颗粒大小</td></tr>
+    <tr><td><code>FilterSize</code></td><td>1.0</td><td>色彩溢出采样间距（像素）</td></tr>
+    <tr><td><code>BleedPower</code></td><td>1.25</td><td>色彩溢出强度</td></tr>
+    <tr><td><code>SharpenPower</code></td><td>5.0</td><td>孔径锐化强度</td></tr>
+  </table>
+</section>
+
+<footer>RetroVHS · UE 5.3~5.8 · 默认值为 <code>M_RetroVHS</code> 的参数默认值与 <code>BP_RetroVHS_Rig</code> 的设置值。</footer>
+
+</div></main>
+<script src="../assets/nav.js"></script>
+</body>
+</html>

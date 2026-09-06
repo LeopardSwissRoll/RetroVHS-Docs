@@ -53,7 +53,7 @@
 
 <section id="contents">
   <h2>包内容</h2>
-  <p>共 22 个资源。外部引用仅限引擎内容：基本形状（BasicShapes）、材质预览网格体、文本渲染默认字体与材质、<code>T_ScreenDirt02_w</code>。</p>
+  <p>共 26 个资源。外部引用仅限引擎内容：基本形状（BasicShapes）、材质预览网格体、文本渲染默认字体与材质、<code>T_ScreenDirt02_w</code>。</p>
   <table>
     <tr><th>资源（<code>/Game/RetroVHS/</code>）</th><th>类型</th><th>作用</th></tr>
     <tr><td><code>Blueprints/BP_RetroVHS_Rig</code></td><td>蓝图</td><td>根组件 = 无界 PostProcessComponent。关卡中唯一需要放置的 Actor</td></tr>
@@ -61,10 +61,11 @@
     <tr><td><code>Materials/MI_RetroVHS</code></td><td>材质实例</td><td>注册到 Rig 的实例。包含全部用户可调参数</td></tr>
     <tr><td><code>Textures/T_RetroVHS_BandNoise_256</code></td><td>贴图 256×256</td><td>拉丁方噪点。色度噪点的来源</td></tr>
     <tr><td><code>Textures/T_RetroVHS_LUT_{Neutral, Subtle, Standard, Worn}</code></td><td>LUT 贴图 256×16 × 4</td><td>NTSC 风格颜色 LUT。Rig 默认 Standard</td></tr>
-    <tr><td><code>Maps/L_RetroVHS_Overview</code></td><td>地图</td><td>陈列全部资源的总览地图。按 LUT 分为 4 块平台（每块含 3 个颜色探针和 <code>M_Metal</code> 预览网格体），另有墙面、天花板、灯光材质面板 3 块。Rig 为全局，平台的体积仅覆盖 LUT</td></tr>
+    <tr><td><code>Maps/L_RetroVHS_Overview</code></td><td>地图</td><td>陈列全部资源的总览地图。5 块效果隔离平台（REFERENCE, FISHEYE, CHROMA NOISE, COLOR BLEED, SHARPEN）和 4 块 LUT 平台，每块含 3 个颜色探针和 <code>MI_Metal</code> 预览网格体，另有墙面、天花板、灯光材质面板 3 块。平台的体积指定效果实例与 LUT，Rig 以禁用状态放置</td></tr>
     <tr><td><code>Maps/L_RetroVHS_Showcase</code></td><td>地图</td><td>演示场景。由引擎基本形状和 <code>M_BackRoom</code> 构成的 24 × 24 m 室内。1 个 Rig + Standard LUT。照明仅来自天花板面板的自发光，因此需要 Lumen</td></tr>
     <tr><td><code>Demo/Materials/M_BackRoom</code>, <code>MI_BackRoom{Plane, Wall, Ceiling, Light}</code></td><td>主材质 1 + 实例 4</td><td>世界对齐的三平面投影材质。与网格体 UV 无关，按厘米单位平铺。地面 · 墙面 · 天花板（网格遮罩） · 荧光灯面板（自发光）</td></tr>
-    <tr><td><code>Demo/Materials/M_Tint</code>, <code>M_Metal</code>, <code>MI_R</code>, <code>MI_G</code>, <code>MI_B</code></td><td>主材质 1 + 实例 4</td><td>探针用纯色材质。<code>M_Metal</code> 为清漆实例，R/G/B 为检查色彩溢出的三原色</td></tr>
+    <tr><td><code>Demo/Materials/M_Tint</code>, <code>MI_Metal</code>, <code>MI_R</code>, <code>MI_G</code>, <code>MI_B</code></td><td>主材质 1 + 实例 4</td><td>探针用纯色材质。<code>MI_Metal</code> 为清漆实例，R/G/B 为检查色彩溢出的三原色</td></tr>
+<tr><td><code>Demo/Materials/MI_RetroVHS_{Fisheye, ChromaNoise, ColorBleed, Sharpen}</code></td><td>实例 4</td><td>用于总览地图的效果隔离平台。仅启用单一效果的 <code>M_RetroVHS</code> 实例</td></tr>
     <tr><td><code>Demo/Textures/T_BackRoomCeilingMask</code>, <code>T_BackRoom_ORM_Flat</code></td><td>贴图 1024²、4×4</td><td>天花板网格遮罩 · 平面 ORM 默认值</td></tr>
   </table>
 </section>
@@ -89,12 +90,12 @@
     <tr><td><code>LensStrength</code></td><td>45</td><td>鱼眼半视场角（度）</td></tr>
     <tr><td><code>LensZoom</code></td><td>1.0</td><td>鱼眼放大倍率</td></tr>
     <tr><td><code>FrameRate</code></td><td>29.98</td><td>噪点更新频率（fps）</td></tr>
-    <tr><td><code>BandCount</code></td><td>100</td><td>水平条带数</td></tr>
-    <tr><td><code>BandPower</code></td><td>0.5</td><td>条带强度分布指数</td></tr>
+    <tr><td><code>BandCount</code></td><td>100</td><td>受条带影响的行比例（值/256）</td></tr>
+    <tr><td><code>BandPower</code></td><td>0.5</td><td>条带行的采样偏移倍率。0 = 无条带</td></tr>
     <tr><td><code>NoisePower</code></td><td>0.2</td><td>色度噪点强度</td></tr>
     <tr><td><code>NoiseSize</code></td><td>1.0</td><td>色度噪点颗粒大小</td></tr>
-    <tr><td><code>FilterSize</code></td><td>1.0</td><td>色彩溢出采样间距（像素）</td></tr>
-    <tr><td><code>BleedPower</code></td><td>1.25</td><td>色彩溢出强度</td></tr>
+    <tr><td><code>FilterSize</code></td><td>1.0</td><td>采样间距（像素），由色彩溢出、条带噪点和锐化共用。0 = 三者均无</td></tr>
+    <tr><td><code>BleedPower</code></td><td>1.25</td><td>色度增益。1.0 = 原始饱和度，0 = 灰度</td></tr>
     <tr><td><code>SharpenPower</code></td><td>5.0</td><td>孔径锐化强度</td></tr>
   </table>
 </section>

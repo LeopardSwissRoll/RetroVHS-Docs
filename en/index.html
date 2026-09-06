@@ -53,7 +53,7 @@
 
 <section id="contents">
   <h2>Pack contents</h2>
-  <p>22 assets in total. The only external references are engine content: basic shapes (BasicShapes), the material preview mesh, the default text-render font and material, and <code>T_ScreenDirt02_w</code>.</p>
+  <p>26 assets in total. The only external references are engine content: basic shapes (BasicShapes), the material preview mesh, the default text-render font and material, and <code>T_ScreenDirt02_w</code>.</p>
   <table>
     <tr><th>Asset (<code>/Game/RetroVHS/</code>)</th><th>Type</th><th>Role</th></tr>
     <tr><td><code>Blueprints/BP_RetroVHS_Rig</code></td><td>Blueprint</td><td>Root = unbound PostProcessComponent. The only actor placed in the level</td></tr>
@@ -61,10 +61,11 @@
     <tr><td><code>Materials/MI_RetroVHS</code></td><td>Material instance</td><td>The instance registered on the rig. All user-facing parameters</td></tr>
     <tr><td><code>Textures/T_RetroVHS_BandNoise_256</code></td><td>Texture 256×256</td><td>Latin-square noise. Source for the chroma noise</td></tr>
     <tr><td><code>Textures/T_RetroVHS_LUT_{Neutral, Subtle, Standard, Worn}</code></td><td>LUT textures 256×16 × 4</td><td>NTSC-style colour LUTs. Rig default: Standard</td></tr>
-    <tr><td><code>Maps/L_RetroVHS_Overview</code></td><td>Map</td><td>Overview map with every asset laid out. Four plates, one per LUT (each with 3 colour probes and the <code>M_Metal</code> preview mesh), plus 3 panels for the wall, ceiling and light materials. The rig is global; each plate's volume overrides only the LUT</td></tr>
+    <tr><td><code>Maps/L_RetroVHS_Overview</code></td><td>Map</td><td>Overview map with every asset laid out. Five effect plates (REFERENCE, FISHEYE, CHROMA NOISE, COLOR BLEED, SHARPEN) and four LUT plates, each with 3 colour probes and the <code>MI_Metal</code> preview mesh, plus 3 panels for the wall, ceiling and light materials. Each plate's volume sets the effect instance and the LUT; the rig is placed but disabled in this map</td></tr>
     <tr><td><code>Maps/L_RetroVHS_Showcase</code></td><td>Map</td><td>Demo scene. A 24 × 24 m interior built from engine basic shapes and <code>M_BackRoom</code>. One rig with the Standard LUT. Lit only by the emissive ceiling panels, so Lumen is required</td></tr>
     <tr><td><code>Demo/Materials/M_BackRoom</code>, <code>MI_BackRoom{Plane, Wall, Ceiling, Light}</code></td><td>1 master + 4 instances</td><td>World-aligned tri-planar material. Tiles in centimetres regardless of mesh UVs. Floor · wall · ceiling (grid mask) · fluorescent panel (emissive)</td></tr>
-    <tr><td><code>Demo/Materials/M_Tint</code>, <code>M_Metal</code>, <code>MI_R</code>, <code>MI_G</code>, <code>MI_B</code></td><td>1 master + 4 instances</td><td>Flat-colour probe materials. <code>M_Metal</code> is a clear-coat instance; R/G/B are primary colours for checking color bleed</td></tr>
+    <tr><td><code>Demo/Materials/M_Tint</code>, <code>MI_Metal</code>, <code>MI_R</code>, <code>MI_G</code>, <code>MI_B</code></td><td>1 master + 4 instances</td><td>Flat-colour probe materials. <code>MI_Metal</code> is a clear-coat instance; R/G/B are primary colours for checking color bleed</td></tr>
+<tr><td><code>Demo/Materials/MI_RetroVHS_{Fisheye, ChromaNoise, ColorBleed, Sharpen}</code></td><td>4 instances</td><td>For the effect plates of the overview map. Instances of <code>M_RetroVHS</code> with a single effect enabled</td></tr>
     <tr><td><code>Demo/Textures/T_BackRoomCeilingMask</code>, <code>T_BackRoom_ORM_Flat</code></td><td>Textures 1024², 4×4</td><td>Ceiling grid mask · flat ORM default</td></tr>
   </table>
 </section>
@@ -89,12 +90,12 @@
     <tr><td><code>LensStrength</code></td><td>45</td><td>Fisheye half field of view (degrees)</td></tr>
     <tr><td><code>LensZoom</code></td><td>1.0</td><td>Fisheye magnification</td></tr>
     <tr><td><code>FrameRate</code></td><td>29.98</td><td>Noise update rate (fps)</td></tr>
-    <tr><td><code>BandCount</code></td><td>100</td><td>Number of horizontal bands</td></tr>
-    <tr><td><code>BandPower</code></td><td>0.5</td><td>Band intensity distribution exponent</td></tr>
+    <tr><td><code>BandCount</code></td><td>100</td><td>Fraction of rows affected by bands (value/256)</td></tr>
+    <tr><td><code>BandPower</code></td><td>0.5</td><td>Tap offset multiplier on band rows. 0 = no bands</td></tr>
     <tr><td><code>NoisePower</code></td><td>0.2</td><td>Chroma noise strength</td></tr>
     <tr><td><code>NoiseSize</code></td><td>1.0</td><td>Chroma noise grain size</td></tr>
-    <tr><td><code>FilterSize</code></td><td>1.0</td><td>Color bleed tap spacing (pixels)</td></tr>
-    <tr><td><code>BleedPower</code></td><td>1.25</td><td>Color bleed strength</td></tr>
+    <tr><td><code>FilterSize</code></td><td>1.0</td><td>Tap spacing (pixels), shared by colour bleed, band noise and sharpening. 0 = none of the three</td></tr>
+    <tr><td><code>BleedPower</code></td><td>1.25</td><td>Chroma gain. 1.0 = original saturation, 0 = greyscale</td></tr>
     <tr><td><code>SharpenPower</code></td><td>5.0</td><td>Aperture sharpening strength</td></tr>
   </table>
 </section>

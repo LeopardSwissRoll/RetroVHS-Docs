@@ -53,7 +53,7 @@
 
 <section id="contents">
   <h2>パック構成</h2>
-  <p>全 22 アセットです。外部参照はエンジンコンテンツのみです：基本形状（BasicShapes）、マテリアルプレビューメッシュ、テキストレンダーの既定フォント・マテリアル、<code>T_ScreenDirt02_w</code>。</p>
+  <p>全 26 アセットです。外部参照はエンジンコンテンツのみです：基本形状（BasicShapes）、マテリアルプレビューメッシュ、テキストレンダーの既定フォント・マテリアル、<code>T_ScreenDirt02_w</code>。</p>
   <table>
     <tr><th>アセット（<code>/Game/RetroVHS/</code>）</th><th>種類</th><th>役割</th></tr>
     <tr><td><code>Blueprints/BP_RetroVHS_Rig</code></td><td>ブループリント</td><td>ルート = アンバウンドの PostProcessComponent。レベルに配置する唯一のアクタ</td></tr>
@@ -61,10 +61,11 @@
     <tr><td><code>Materials/MI_RetroVHS</code></td><td>マテリアルインスタンス</td><td>リグに登録されるインスタンス。ユーザーが調整するパラメータ全て</td></tr>
     <tr><td><code>Textures/T_RetroVHS_BandNoise_256</code></td><td>テクスチャ 256×256</td><td>ラテン方陣ノイズ。クロマノイズのソース</td></tr>
     <tr><td><code>Textures/T_RetroVHS_LUT_{Neutral, Subtle, Standard, Worn}</code></td><td>LUT テクスチャ 256×16 × 4</td><td>NTSC 系カラー LUT。リグ既定値 Standard</td></tr>
-    <tr><td><code>Maps/L_RetroVHS_Overview</code></td><td>マップ</td><td>全アセット展示マップ。LUT 別のプレート 4 枚（各カラープローブ 3 + <code>M_Metal</code> プレビューメッシュ）、壁・天井・照明マテリアルのパネル 3 枚。リグはグローバル、プレートのボリュームは LUT のみ上書き</td></tr>
+    <tr><td><code>Maps/L_RetroVHS_Overview</code></td><td>マップ</td><td>全アセット展示マップ。エフェクト分離プレート 5 枚（REFERENCE, FISHEYE, CHROMA NOISE, COLOR BLEED, SHARPEN）と LUT プレート 4 枚、各プレートにカラープローブ 3 + <code>MI_Metal</code> プレビューメッシュ。壁・天井・照明マテリアルのパネル 3 枚。プレートのボリュームがエフェクトインスタンスと LUT を指定し、リグは無効状態で配置されています</td></tr>
     <tr><td><code>Maps/L_RetroVHS_Showcase</code></td><td>マップ</td><td>デモシーン。エンジン基本形状と <code>M_BackRoom</code> で構成した 24 × 24 m の室内。リグ 1 + Standard LUT。照明は天井パネルのエミッシブのみのため Lumen が必要</td></tr>
     <tr><td><code>Demo/Materials/M_BackRoom</code>, <code>MI_BackRoom{Plane, Wall, Ceiling, Light}</code></td><td>マスター 1 + インスタンス 4</td><td>ワールド整列の三面投影マテリアル。メッシュ UV に依存せず cm 単位で繰り返し。床 · 壁 · 天井（グリッドマスク） · 蛍光灯パネル（エミッシブ）</td></tr>
-    <tr><td><code>Demo/Materials/M_Tint</code>, <code>M_Metal</code>, <code>MI_R</code>, <code>MI_G</code>, <code>MI_B</code></td><td>マスター 1 + インスタンス 4</td><td>プローブ用の単色マテリアル。<code>M_Metal</code> はクリアコートのインスタンス、R/G/B は色にじみ確認用の原色</td></tr>
+    <tr><td><code>Demo/Materials/M_Tint</code>, <code>MI_Metal</code>, <code>MI_R</code>, <code>MI_G</code>, <code>MI_B</code></td><td>マスター 1 + インスタンス 4</td><td>プローブ用の単色マテリアル。<code>MI_Metal</code> はクリアコートのインスタンス、R/G/B は色にじみ確認用の原色</td></tr>
+<tr><td><code>Demo/Materials/MI_RetroVHS_{Fisheye, ChromaNoise, ColorBleed, Sharpen}</code></td><td>インスタンス 4</td><td>オーバービューマップのエフェクト分離プレート用。エフェクトを一つだけ有効にした <code>M_RetroVHS</code> のインスタンス</td></tr>
     <tr><td><code>Demo/Textures/T_BackRoomCeilingMask</code>, <code>T_BackRoom_ORM_Flat</code></td><td>テクスチャ 1024²、4×4</td><td>天井グリッドマスク · 平面 ORM 既定値</td></tr>
   </table>
 </section>
@@ -89,12 +90,12 @@
     <tr><td><code>LensStrength</code></td><td>45</td><td>魚眼の半画角（度）</td></tr>
     <tr><td><code>LensZoom</code></td><td>1.0</td><td>魚眼の拡大倍率</td></tr>
     <tr><td><code>FrameRate</code></td><td>29.98</td><td>ノイズ更新周期（fps）</td></tr>
-    <tr><td><code>BandCount</code></td><td>100</td><td>水平バンド数</td></tr>
-    <tr><td><code>BandPower</code></td><td>0.5</td><td>バンド強度分布の指数</td></tr>
+    <tr><td><code>BandCount</code></td><td>100</td><td>バンドがかかる行の割合（値/256）</td></tr>
+    <tr><td><code>BandPower</code></td><td>0.5</td><td>バンド行のタップオフセット倍率。0 = バンドなし</td></tr>
     <tr><td><code>NoisePower</code></td><td>0.2</td><td>クロマノイズの強度</td></tr>
     <tr><td><code>NoiseSize</code></td><td>1.0</td><td>クロマノイズの粒サイズ</td></tr>
-    <tr><td><code>FilterSize</code></td><td>1.0</td><td>色にじみのタップ間隔（ピクセル）</td></tr>
-    <tr><td><code>BleedPower</code></td><td>1.25</td><td>色にじみの強度</td></tr>
+    <tr><td><code>FilterSize</code></td><td>1.0</td><td>タップ間隔（ピクセル）。色にじみ・バンドノイズ・シャープニングで共有。0 = 三つとも無効</td></tr>
+    <tr><td><code>BleedPower</code></td><td>1.25</td><td>クロマゲイン。1.0 = 元の彩度、0 = グレースケール</td></tr>
     <tr><td><code>SharpenPower</code></td><td>5.0</td><td>アパーチャシャープニングの強度</td></tr>
   </table>
 </section>

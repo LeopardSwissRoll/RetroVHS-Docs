@@ -57,7 +57,7 @@
 
 <section id="contents">
   <h2>팩 구성</h2>
-  <p>총 22 에셋입니다. 외부 참조는 엔진 콘텐츠뿐입니다: 기본 도형(BasicShapes), 머티리얼 프리뷰 메시, 텍스트 렌더 기본 폰트·머티리얼, <code>T_ScreenDirt02_w</code>.</p>
+  <p>총 26 에셋입니다. 외부 참조는 엔진 콘텐츠뿐입니다: 기본 도형(BasicShapes), 머티리얼 프리뷰 메시, 텍스트 렌더 기본 폰트·머티리얼, <code>T_ScreenDirt02_w</code>.</p>
   <table>
     <tr><th>에셋 (<code>/Game/RetroVHS/</code>)</th><th>종류</th><th>역할</th></tr>
     <tr><td><code>Blueprints/BP_RetroVHS_Rig</code></td><td>블루프린트</td><td>루트 = 언바운드 PostProcessComponent. 레벨에 배치하는 유일한 액터</td></tr>
@@ -65,10 +65,11 @@
     <tr><td><code>Materials/MI_RetroVHS</code></td><td>머티리얼 인스턴스</td><td>리그에 등록되는 인스턴스. 사용자 조절 파라미터 전부</td></tr>
     <tr><td><code>Textures/T_RetroVHS_BandNoise_256</code></td><td>텍스처 256×256</td><td>라틴 방진 노이즈. 크로마 노이즈 소스</td></tr>
     <tr><td><code>Textures/T_RetroVHS_LUT_{Neutral, Subtle, Standard, Worn}</code></td><td>LUT 텍스처 256×16 × 4</td><td>NTSC 계열 컬러 LUT. 리그 기본값 Standard</td></tr>
-    <tr><td><code>Maps/L_RetroVHS_Overview</code></td><td>맵</td><td>전 에셋 진열 맵. LUT 별 판 4개(각각 색 프로브 3 + <code>M_Metal</code> 프리뷰 메시), 벽·천장·조명 머티리얼 패널 3. 리그는 전역, 판의 볼륨은 LUT 만 덮어씁니다</td></tr>
+    <tr><td><code>Maps/L_RetroVHS_Overview</code></td><td>맵</td><td>전 에셋 진열 맵. 효과 격리 판 5개(REFERENCE, FISHEYE, CHROMA NOISE, COLOR BLEED, SHARPEN)와 LUT 판 4개, 판마다 색 프로브 3 + <code>MI_Metal</code> 프리뷰 메시. 벽·천장·조명 머티리얼 패널 3. 판의 볼륨이 효과 인스턴스와 LUT 를 지정하며, 리그는 비활성 상태로 배치되어 있습니다</td></tr>
     <tr><td><code>Maps/L_RetroVHS_Showcase</code></td><td>맵</td><td>데모 씬. 엔진 기본 도형과 <code>M_BackRoom</code> 으로 구성한 24 × 24 m 실내. 리그 1 + Standard LUT. 조명은 천장 패널의 이미시브만 사용하므로 Lumen 이 필요합니다</td></tr>
     <tr><td><code>Demo/Materials/M_BackRoom</code>, <code>MI_BackRoom{Plane, Wall, Ceiling, Light}</code></td><td>마스터 1 + 인스턴스 4</td><td>월드 정렬 삼면 투영 머티리얼. 메시 UV 와 무관하게 cm 단위로 반복. 바닥 · 벽 · 천장(격자 마스크) · 형광 패널(이미시브)</td></tr>
-    <tr><td><code>Demo/Materials/M_Tint</code>, <code>M_Metal</code>, <code>MI_R</code>, <code>MI_G</code>, <code>MI_B</code></td><td>마스터 1 + 인스턴스 4</td><td>프로브용 단색 머티리얼. <code>M_Metal</code> 은 클리어코트 인스턴스, R/G/B 는 색 번짐 확인용 원색</td></tr>
+    <tr><td><code>Demo/Materials/M_Tint</code>, <code>MI_Metal</code>, <code>MI_R</code>, <code>MI_G</code>, <code>MI_B</code></td><td>마스터 1 + 인스턴스 4</td><td>프로브용 단색 머티리얼. <code>MI_Metal</code> 은 클리어코트 인스턴스, R/G/B 는 색 번짐 확인용 원색</td></tr>
+<tr><td><code>Demo/Materials/MI_RetroVHS_{Fisheye, ChromaNoise, ColorBleed, Sharpen}</code></td><td>인스턴스 4</td><td>오버뷰 맵의 효과 격리 판용. 효과 하나만 켠 <code>M_RetroVHS</code> 인스턴스</td></tr>
     <tr><td><code>Demo/Textures/T_BackRoomCeilingMask</code>, <code>T_BackRoom_ORM_Flat</code></td><td>텍스처 1024², 4×4</td><td>천장 격자 마스크 · 평면 ORM 기본값</td></tr>
   </table>
 </section>
@@ -93,12 +94,12 @@
     <tr><td><code>LensStrength</code></td><td>45</td><td>어안 반화각(도)</td></tr>
     <tr><td><code>LensZoom</code></td><td>1.0</td><td>어안 확대 배율</td></tr>
     <tr><td><code>FrameRate</code></td><td>29.98</td><td>노이즈 갱신 주기(fps)</td></tr>
-    <tr><td><code>BandCount</code></td><td>100</td><td>수평 밴드 수</td></tr>
-    <tr><td><code>BandPower</code></td><td>0.5</td><td>밴드 세기 분포 지수</td></tr>
+    <tr><td><code>BandCount</code></td><td>100</td><td>밴드가 걸리는 행의 비율(값/256)</td></tr>
+    <tr><td><code>BandPower</code></td><td>0.5</td><td>밴드 행의 탭 오프셋 배율. 0 = 밴드 없음</td></tr>
     <tr><td><code>NoisePower</code></td><td>0.2</td><td>크로마 노이즈 세기</td></tr>
     <tr><td><code>NoiseSize</code></td><td>1.0</td><td>크로마 노이즈 알갱이 크기</td></tr>
-    <tr><td><code>FilterSize</code></td><td>1.0</td><td>색 번짐 탭 간격(픽셀)</td></tr>
-    <tr><td><code>BleedPower</code></td><td>1.25</td><td>색 번짐 세기</td></tr>
+    <tr><td><code>FilterSize</code></td><td>1.0</td><td>탭 간격(픽셀). 색 번짐·밴드 노이즈·샤프닝이 공유. 0 = 셋 모두 없음</td></tr>
+    <tr><td><code>BleedPower</code></td><td>1.25</td><td>크로마 게인. 1.0 = 원본 채도, 0 = 무채색</td></tr>
     <tr><td><code>SharpenPower</code></td><td>5.0</td><td>어퍼처 샤프닝 세기</td></tr>
   </table>
 </section>
